@@ -5,8 +5,12 @@
   "scripts": {
     "start": "node app.js"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
+    "bower": "^1.7.9",
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "load-grunt-tasks": "^3.5.0"
   }
 }
