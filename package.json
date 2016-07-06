@@ -1,0 +1,12 @@
+{
+  "name": "javascript-node-sample",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
