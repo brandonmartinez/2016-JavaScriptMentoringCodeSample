@@ -1,43 +1,19 @@
-// Call "node app.js" from the command line.
+// Declare "app" as a container to be used for view models and such (in the browser, this would be global or off of "window")
+var app = {},
+    // Require our "modules" to be used by our app (in the browser, these would just be <script src=""> tags without the exports)
+    OrderViewModel = require('./lib/OrderViewModel.js'),
+    UserViewModel = require('./lib/UserViewModel.js');
 
-// Our viewmodel to test state with
+// Create a new instance of our view models to use
+app.orderViewModel = new OrderViewModel();
+app.userViewModel = new UserViewModel();
 
-function OrderViewModel() {
-    // Private Variables
-    var self = this,
-        orderCount;
-
-    // Public Properties
-
-
-    // Private 
-    function getModifiedOrderCount() {
-        return ++orderCount;
-    }
-
-    // Public Methods
-    self.HowManyOrders = function () {
-        var modifiedOrderCount = getModifiedOrderCount();
-        return modifiedOrderCount;
-    };
-
-    self.PrintOrders = function () {
-        var orders = self.HowManyOrders();
-        console.log(orders);
-    };
-
-    self.Initialize = function (options) {
-        var o = options || {};
-
-        orderCount = options.orderCount || 592;
-    };
-}
-
-var vm = new OrderViewModel(),
+// Proceed as before
+var vm = app.orderViewModel,
     vmOptions = {
         //orderCount: 50
     };
 
-vm.Initialize(vmOptions);
-vm.PrintOrders();
-vm.PrintOrders();
+vm.initialize(vmOptions);
+vm.printOrders();
+vm.printOrders();
