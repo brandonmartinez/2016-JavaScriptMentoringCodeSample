@@ -1,19 +1,20 @@
-// Declare "app" as a container to be used for view models and such (in the browser, this would be global or off of "window")
-var app = {},
-    // Require our "modules" to be used by our app (in the browser, these would just be <script src=""> tags without the exports)
-    OrderViewModel = require('./lib/OrderViewModel.js'),
-    UserViewModel = require('./lib/UserViewModel.js');
 
-// Create a new instance of our view models to use
-app.orderViewModel = new OrderViewModel();
-app.userViewModel = new UserViewModel();
 
-// Proceed as before
-var vm = app.orderViewModel,
-    vmOptions = {
-        //orderCount: 50
-    };
+var express = require('express'),
+  config = require('./config/config'),
+  db = require('./app/models');
 
-vm.initialize(vmOptions);
-vm.printOrders();
-vm.printOrders();
+var app = express();
+
+require('./config/express')(app, config);
+
+db.sequelize
+  .sync()
+  .then(function () {
+    app.listen(config.port, function () {
+      console.log('Express server listening on port ' + config.port);
+    });
+  }).catch(function (e) {
+    throw new Error(e);
+  });
+

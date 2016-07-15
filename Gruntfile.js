@@ -1,34 +1,96 @@
+'use strict';
+
+var request = require('request');
+
 module.exports = function (grunt) {
-    'use strict';
+  // show elapsed time at the end
+  require('time-grunt')(grunt);
+  // load all grunt tasks
+  require('load-grunt-tasks')(grunt);
 
-    // Using load-grunt-tasks to automatically load all grunt task modules
-    require('load-grunt-tasks')(grunt);
+  var scriptPaths = ['Gruntfile.js', 'app.js', 'app/**/*.js', 'public/**/*.js'];
+  var reloadPort = 35729, files;
 
-    // Common Paths
-    var scriptPaths = ['Gruntfile.js', 'app.js', 'lib/**/*.js'];
-
-    // Project configuration
-    grunt.initConfig({
-        jshint: {
-            options: {
-                curly: true,
-                eqeqeq: true,
-                eqnull: true,
-                browser: true,
-                globals: {
-                    jQuery: true
-                },
-            },
-            app: scriptPaths
+  grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+    develop: {
+      server: {
+        file: 'app.js'
+      }
+    },
+    jshint: {
+      options: {
+        curly: true,
+        eqeqeq: true,
+        eqnull: true,
+        browser: true,
+        globals: {
+          jQuery: true
         },
-        watch: {
-            scripts: {
-                files: scriptPaths,
-                tasks: ['jshint:app']
-            }
+      },
+      app: scriptPaths
+    },
+    sass: {
+      dist: {
+        files: {
+          'public/css/style.css': 'public/css/style.scss'
         }
-    });
+      }
+    },
+    watch: {
+      options: {
+        nospawn: true,
+        livereload: reloadPort
+      },
+      js: {
+        files: [
+          'app.js',
+          'app/**/*.js',
+          'config/*.js'
+        ],
+        tasks: ['develop', 'delayed-livereload']
+      },
+      css: {
+        files: [
+          'public/css/*.scss'
+        ],
+        tasks: ['sass'],
+        options: {
+          livereload: reloadPort
+        }
+      },
+      views: {
+        files: [
+          'app/views/*.handlebars',
+          'app/views/**/*.handlebars'
+        ],
+        options: { livereload: reloadPort }
+      }
+    }
+  });
 
-    // Default task
-    grunt.registerTask('default', ['jshint']);
+  grunt.config.requires('watch.js.files');
+  files = grunt.config('watch.js.files');
+  files = grunt.file.expand(files);
+
+  grunt.registerTask('delayed-livereload', 'Live reload after the node server has restarted.', function () {
+    var done = this.async();
+    setTimeout(function () {
+      request.get('http://localhost:' + reloadPort + '/changed?files=' + files.join(','), function (err, res) {
+        var reloaded = !err && res.statusCode === 200;
+        if (reloaded)
+          grunt.log.ok('Delayed live reload successful.');
+        else
+          grunt.log.error('Unable to make a delayed live reload.');
+        done(reloaded);
+      });
+    }, 500);
+  });
+
+  grunt.registerTask('default', [
+    'sass',
+    'jshint',
+    'develop',
+    'watch'
+  ]);
 };
